@@ -6,9 +6,11 @@
 """
 
 from ltp import LTP
+from ltp import StnSplit
 
 
 class LtpParser:
+
     def __init__(self):
         self.ltp = LTP()
 
@@ -55,25 +57,33 @@ class LtpParser:
     '''parser主函数'''
 
     def parser_main(self, sentence):
-        words, hidden = self.ltp.seg([sentence])
-        postags = self.ltp.pos(hidden)
-        arcs = self.ltp.dep(hidden)
+        # words, hidden = self.ltp.seg([sentence])
+        result = self.ltp.pipeline([sentence], tasks=['cws', 'pos', 'dep'])
+        words = result.cws
+        # postags = self.ltp.pos(hidden)
+        postags = result.pos
+        # arcs = self.ltp.dep(hidden)
+        arcs = result.dep
         words, postags, arcs = words[0], postags[0], arcs[0]
         # print(words, '\n', postags, '\n', arcs)
         child_dict_list, format_parse_list = self.build_parse_child_dict(
             words, postags, arcs)
-        roles_dict = self.format_labelrole(hidden)
+        # roles_dict = self.format_labelrole(hidden)
+        roles_dict = self.format_labelrole(result)
         return words, postags, child_dict_list, roles_dict, format_parse_list
 
 
 class TripleExtraction():
+
     def __init__(self):
+        # 這裏就是Ltp對象
         self.parser = LtpParser()
 
     '''文章分句处理, 切分长句，冒号，分号，感叹号等做切分标识'''
 
     def split_sents(self, content):
-        return self.parser.ltp.sent_split([content])
+        # return self.parser.ltp.sent_split([content])
+        return StnSplit().split(content)
 
     '''利用语义角色标注,直接获取主谓宾三元组,基于A0,A1,A2'''
 

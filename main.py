@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from triple_extraction_ltp import TripleExtraction
 
 content1 = '李克强总理今天来我家了,我感到非常荣幸'
